@@ -4,3 +4,6 @@ exit
 console
 run
 exit
+:q
+:quit
+exit
