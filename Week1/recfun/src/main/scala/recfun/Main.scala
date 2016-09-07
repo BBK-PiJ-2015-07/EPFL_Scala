@@ -22,7 +22,17 @@ object Main {
   /**
    * Exercise 2
    */
-    def balance(chars: List[Char]): Boolean = ???
+    def balance(chars: List[Char]): Boolean = {
+      def balanced(list: List[Char], bal: Int): Boolean = {
+        if(list.isEmpty) bal == 0
+        else
+          if(list.head == '(') balanced(list.tail, bal+1)
+          else
+            if(list.head == ')') bal > 0 && balanced(list.tail, bal-1)
+            else balanced(list.tail, bal)
+      }
+      balanced(chars,0)
+    }
   
   /**
    * Exercise 3
