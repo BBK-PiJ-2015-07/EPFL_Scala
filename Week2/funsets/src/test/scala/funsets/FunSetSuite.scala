@@ -29,10 +29,10 @@ class FunSetSuite extends FunSuite {
   /**
    * Tests are written using the "test" operator and the "assert" method.
    */
-  // test("string take") {
-  //   val message = "hello, world"
-  //   assert(message.take(5) == "hello")
-  // }
+  test("string take") {
+     val message = "hello, world"
+     assert(message.take(5) == "hello")
+   }
 
   /**
    * For ScalaTest tests, there exists a special equality operator "===" that
@@ -43,9 +43,9 @@ class FunSetSuite extends FunSuite {
    * Try it out! Change the values so that the assertion fails, and look at the
    * error message.
    */
-  // test("adding ints") {
-  //   assert(1 + 2 === 3)
-  // }
+   test("adding ints") {
+     assert(1 + 2 === 3)
+   }
 
 
   import FunSets._
@@ -101,7 +101,7 @@ class FunSetSuite extends FunSuite {
     }
   }
 
-  test("union contains all elements of each set") {
+  test("Union contains all elements of each set") {
     new TestSets {
       val s = union(s1, s2)
       assert(contains(s, 1), "Union 1")
@@ -110,5 +110,91 @@ class FunSetSuite extends FunSuite {
     }
   }
 
+  test("Intersect contains all elements that are in both sets"){
+    new TestSets{
+      val s = union(s1, s2)
+      val t =  union(s1, s3)
+      val i = intersect(s, t)
 
+      assert(contains(i, 1), "Intersect 1")
+      assert(!contains(i, 2), "Intersect 2")
+      assert(!contains(i, 3), "Intersect 3")
+    }
+  }
+
+  test("Difference the set of all elements of `s` that are not in `t` "){
+    new TestSets{
+      val s = union(s1, s2)
+      val t = union(s1, s3)
+      val d = diff(s, t)
+      val d2 = diff(t, s)
+
+      assert(!contains(d, 1), "Diff 1")
+      assert(contains(d, 2), "Diff 2")
+      assert(!contains(d2, 1), "Diff 3")
+      assert(contains(d2, 3), "Diff 4")
+
+    }
+  }
+
+  test("Filter works"){
+    new TestSets {
+      val s = union(s1,s2)
+      val t = union(s, s3)
+      val f = filter(t, (x: Int) => x <=2)
+
+      assert(contains(f, 1), "Filter 1")
+      assert(contains(f, 2), "Filter 2")
+      assert(!contains(f, 3), "Filter 3")
+    }
+  }
+
+  test("Filter works like intersection") {
+    new TestSets {
+      val s = union(s1, s2)
+      val t = filter(s, (_ == 1))
+      assert(contains(t, 1), "filter 1")
+      assert(!contains(t, 2), "filter 2")
+    }
+  }
+
+  test("Forall works"){
+    new TestSets {
+      val s = union(s1, s2)
+      val t = union(s, s3)
+
+      assert(forall(t, _ < 4))
+      assert(!forall(t, _ < 3))
+    }
+  }
+
+  test("Exists works"){
+    new TestSets {
+      val s = union(s1, s2)
+      val t = union(s, s3)
+
+      assert(exists(t, _== 1), "Exists 1")
+      assert(exists(t, _== 2), "Exists 2")
+      assert(exists(t, _== 3), "Exists 3")
+      assert(!exists(t, _== -1000), "Exists -1000")
+      assert(!exists(t, _== 1000), "Exists 1000")
+      assert(!exists(t, _== -500), "Exists -500")
+      assert(!exists(t, _== 500), "Exists 500")
+      assert(!exists(t, _ == 0), "Exists 0")
+    }
+  }
+
+  test("Map works"){
+    new TestSets {
+      val s = union(s1, s2)
+      val t = union(s, s3)
+
+      val m = map(t, (x: Int) => x*2)
+      assert(contains(m, 4))
+      assert(contains(m, 6))
+
+
+
+    }
+  }
 }
