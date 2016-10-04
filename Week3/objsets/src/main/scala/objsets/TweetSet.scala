@@ -114,6 +114,10 @@ class Empty extends TweetSet {
 
     def union(that: TweetSet): TweetSet = that
 
+    def mostRetweeted: Tweet = throw new NoSuchElementException("No most retweeted in empty tweet set.")
+
+    def descendingByRetweet: TweetList = Nil
+
   /**
    * The following methods are already implemented
    */
