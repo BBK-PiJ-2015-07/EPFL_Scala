@@ -36,6 +36,7 @@ class Tweet(val user: String, val text: String, val retweets: Int) {
  */
 abstract class TweetSet {
 
+  def empty: Boolean
   /**
    * This method takes a predicate and returns a subset of all the elements
    * in the original set for which the predicate is true.
@@ -43,7 +44,7 @@ abstract class TweetSet {
    * Question: Can we implement this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-    def filter(p: Tweet => Boolean): TweetSet = this.filterAcc(p, new Empty)
+  def filter(p: Tweet => Boolean): TweetSet = this.filterAcc(p, new Empty)
   
   /**
    * This is a helper method for `filter` that propagates the accumulated tweets.
@@ -56,7 +57,7 @@ abstract class TweetSet {
    * Question: Should we implement this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-    def union(that: TweetSet): TweetSet
+  def union(that: TweetSet): TweetSet
   
   /**
    * Returns the tweet from this set which has the greatest retweet count.
@@ -110,6 +111,8 @@ abstract class TweetSet {
 
 class Empty extends TweetSet {
 
+    def empty: Boolean = true
+
     def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = acc
 
     def union(that: TweetSet): TweetSet = that
@@ -133,21 +136,35 @@ class Empty extends TweetSet {
 
 class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
 
-    def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = {
-      if(p(elem)) left.filterAcc(p, right.filterAcc(p, acc.incl(elem)))
-      else left.filterAcc(p, right.filterAcc(p,acc))
-    }
+  def empty: Boolean = false
 
-  /** override def * Returns a new `TweetSet` that is the union of `TweetSet`s `this` and `that`.
-   *
-   * Question: Should we implement this method here, or should it remain abstract
-   * and be implemented in the subclasses?
-   */
-  def union(that: TweetSet): TweetSet = {
+  override def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = {
+    if(p(elem)) left.filterAcc(p, right.filterAcc(p, acc.incl(elem)))
+    else left.filterAcc(p, right.filterAcc(p,acc))
+  }
+
+  override def union(that: TweetSet): TweetSet = {
     (left union (right union that)).incl(elem)
   }
 
+  override def mostRetweeted: Tweet = {
+    lazy val leftMost = left.mostRetweeted
+    lazy val rightMost = right.mostRetweeted
 
+    if( !left.empty && leftMost.retweets > elem.retweets )
+      if( !right.empty && rightMost.retweets > leftMost.retweets )
+        rightMost
+      else
+        leftMost
+    else if( !right.empty && rightMost.retweets > elem.retweets )
+      rightMost
+    else
+      elem
+  }
+
+  override def descendingByRetweet: TweetList = {
+    new Cons(mostRetweeted, remove(mostRetweeted).descendingByRetweet)
+  }
   /**
    * The following methods are already implemented
    */
