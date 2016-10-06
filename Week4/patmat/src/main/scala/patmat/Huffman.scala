@@ -75,7 +75,7 @@ object Huffman {
    *       println("integer is  : "+ theInt)
    *   }
    */
-    def times(chars: List[Char]): List[(Char, Int)] = encode(chars)
+    def times(chars: List[Char]): List[(Char, Int)] = encodeWithWeights(chars)
 
     def pack[T](xs: List[T]): List[List[T]] = xs match {
       case Nil => Nil
@@ -84,7 +84,7 @@ object Huffman {
         equal :: pack(notEqual)
     }
 
-    def encode[T](xs: List[T]): List[(T, Int)] = {
+    def encodeWithWeights[T](xs: List[T]): List[(T, Int)] = {
       pack(xs) map (ys => (ys.head, ys.length))
     }
 
@@ -97,8 +97,50 @@ object Huffman {
    * head of the list should have the smallest weight), where the weight
    * of a leaf is the frequency of the character.
    */
-    def makeOrderedLeafList(freqs: List[(Char, Int)]): List[Leaf] = ???
-  
+    def makeOrderedLeafList(freqs: List[(Char, Int)]): List[Leaf] = freqs match {
+      case Nil => Nil
+      case x :: xs =>
+    }
+
+  private def msort[T](xs: List[T])(lt: (T, T) => Boolean): List[T] = {
+    val n = xs.length/2
+    if (n == 0) xs
+    else {
+      def merge(xs: List[T], ys: List[T]): List[T] = (xs, ys) match {
+          case (Nil, ys) => ys
+          case (xs, Nil) => xs
+          case (x :: xs1, y :: ys1) =>
+            if(lt(x,y)) x ::merge(xs1, ys)
+            else y :: merge(xs, ys1)
+        }
+
+
+      val (fst, snd) = xs splitAt n
+      merge(msort(fst)(lt), msort(snd)(lt))
+    }
+  }
+  //TODO
+  private def toListOfLeaves
+
+//  def merge(xs: List[Int], ys: List[Int]) =
+//    xs match {
+//      case Nil =>
+//        ys
+//      case x :: xs1 =>
+//        ys match {
+//          case Nil =>
+//            xs
+//          case y :: ys1 =>
+//            if (x < y) x :: merge(xs1, ys)
+//            else y :: merge(xs, ys1)
+//        }
+//    }
+
+
+
+  //case class Leaf(char: Char, weight: Int) extends CodeTree
+
+
   /**
    * Checks whether the list `trees` contains only one single code tree.
    */
