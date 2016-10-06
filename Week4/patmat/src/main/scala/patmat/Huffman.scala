@@ -75,8 +75,21 @@ object Huffman {
    *       println("integer is  : "+ theInt)
    *   }
    */
-    def times(chars: List[Char]): List[(Char, Int)] = chars.groupBy(x => x).map(x => (x._1, x._2.size)).toList
-  
+    def times(chars: List[Char]): List[(Char, Int)] = encode(chars)
+
+    def pack[T](xs: List[T]): List[List[T]] = xs match {
+      case Nil => Nil
+      case x :: xs1 =>
+        val (equal, notEqual) = xs partition (y => y == x)
+        equal :: pack(notEqual)
+    }
+
+    def encode[T](xs: List[T]): List[(T, Int)] = {
+      pack(xs) map (ys => (ys.head, ys.length))
+    }
+
+  //chars.groupBy(x => x).map(x => (x._1, x._2.size)).toList
+
   /**
    * Returns a list of `Leaf` nodes for a given frequency table `freqs`.
    *
