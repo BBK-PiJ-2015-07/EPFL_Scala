@@ -144,7 +144,7 @@ object Huffman {
       case _ => trees
     }
 
-  //Nicer:
+  //Nicer
   /*def combine(trees: List[CodeTree]): List[CodeTree] = trees match {
     case left :: right :: cs => (makeCodeTree(left, right) :: cs)
       .sortWith((t1, t2) => weight(t1) < weight(t2))
@@ -168,7 +168,7 @@ object Huffman {
    *    the example invocation. Also define the return type of the `until` function.
    *  - try to find sensible parameter names for `xxx`, `yyy` and `zzz`.
    */
-    def until(xxx: ???, yyy: ???)(zzz: ???): ??? = ???
+    def until(singletonFunc: List[CodeTree] => Boolean, combineFunc: List[CodeTree] => List[CodeTree])(trees: List[CodeTree]): List[CodeTree] = ???
   
   /**
    * This function creates a code tree which is optimal to encode the text `chars`.
