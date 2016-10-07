@@ -104,7 +104,7 @@ object Huffman {
         sorted map (ys => Leaf(ys._1, ys._2))}
     }
 
-  private def msort[T](xs: List[T])(lt: (T, T) => Boolean): List[T] = {
+  private def msort[T](xs: List[T])(implicit lt: (T, T) => Boolean): List[T] = {
     val n = xs.length/2
     if (n == 0) xs
     else {
@@ -116,7 +116,7 @@ object Huffman {
             else y :: merge(xs, ys1)
         }
       val (fst, snd) = xs splitAt n
-      merge(msort(fst)(lt), msort(snd)(lt))
+      merge(msort(fst), msort(snd))
     }
   }
 
