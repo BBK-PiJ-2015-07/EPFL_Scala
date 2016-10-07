@@ -99,7 +99,9 @@ object Huffman {
    */
     def makeOrderedLeafList(freqs: List[(Char, Int)]): List[Leaf] = freqs match {
       case Nil => Nil
-      case x :: xs =>
+      case x :: xs =>{
+        val sorted = msort(freqs)((pair1,pair2) => pair1._2 < pair2._2)
+        sorted map (ys => Leaf(ys._1, ys._2))}
     }
 
   private def msort[T](xs: List[T])(lt: (T, T) => Boolean): List[T] = {
@@ -113,38 +115,15 @@ object Huffman {
             if(lt(x,y)) x ::merge(xs1, ys)
             else y :: merge(xs, ys1)
         }
-
-
       val (fst, snd) = xs splitAt n
       merge(msort(fst)(lt), msort(snd)(lt))
     }
   }
-  //TODO
-  private def toListOfLeaves
-
-//  def merge(xs: List[Int], ys: List[Int]) =
-//    xs match {
-//      case Nil =>
-//        ys
-//      case x :: xs1 =>
-//        ys match {
-//          case Nil =>
-//            xs
-//          case y :: ys1 =>
-//            if (x < y) x :: merge(xs1, ys)
-//            else y :: merge(xs, ys1)
-//        }
-//    }
-
-
-
-  //case class Leaf(char: Char, weight: Int) extends CodeTree
-
 
   /**
    * Checks whether the list `trees` contains only one single code tree.
    */
-    def singleton(trees: List[CodeTree]): Boolean = ???
+    def singleton(trees: List[CodeTree]): Boolean = trees.size == 1
   
   /**
    * The parameter `trees` of this function is a list of code trees ordered
