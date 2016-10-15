@@ -1,7 +1,7 @@
 package forcomp
 
 import com.sun.xml.internal.bind.v2.schemagen.xmlschema.Occurs
-
+import scala.collection.immutable._
 
 object Anagrams {
 
@@ -95,7 +95,7 @@ object Anagrams {
     * Note that the order of the occurrence list subsets does not matter -- the subsets
     * in the example above could have been displayed in some other order.
     */
-  def combinations(occurrences: Occurrences): List[Occurrences] = occurrences match {
+  /*def combinations(occurrences: Occurrences): List[Occurrences] = occurrences match {
     case Nil => List(Nil)
     case x :: xs => {
       def getPairs(pair: (Char, Int)): List[(Char, Int)] = ((1 to pair._2) map (i => (pair._1, i))).toList
@@ -109,7 +109,12 @@ object Anagrams {
       val combs = occurrences.foldLeft(List[(Char, Int)]())((b, a) => b ++ getPairs(a))
       combs.toSet.subsets.map(_.toList).toList filter noDuplicateKeys
     }
-  }
+  }*/
+
+  def combinations(occurrences: Occurrences): List[Occurrences] =
+    (occurrences foldRight List[Occurrences](Nil)) { case ((ch,tm), acc) => {
+      acc ++ ( for { comb <- acc; n <- 1 to tm } yield (ch, n) :: comb )
+    } }
 
   /** Subtracts occurrence list `y` from occurrence list `x`.
     *
@@ -121,7 +126,16 @@ object Anagrams {
     * Note: the resulting value is an occurrence - meaning it is sorted
     * and has no zero-entries.
     */
-  def subtract(x: Occurrences, y: Occurrences): Occurrences = x filterNot (p => y.exists(p2 => p._1 == p2._1 && p._2 <= p2._2))
+  //def subtract(x: Occurrences, y: Occurrences): Occurrences = x filterNot (p => y.exists(p2 => p._1 == p2._1 && p._2 <= p2._2))
+
+  def subtract(x: Occurrences, y: Occurrences): Occurrences = {
+    (y foldLeft SortedMap[Char,Int]() ++ x){ case (map, (ch, tm)) => {
+      val newTm = map(ch) - tm
+      if (newTm != 0) map updated (ch, newTm)
+      else map - ch
+    } }.toList
+  }
+
 
   /** Returns a list of all anagram sentences of the given sentence.
     *
