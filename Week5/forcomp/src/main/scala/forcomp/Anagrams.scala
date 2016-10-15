@@ -1,5 +1,7 @@
 package forcomp
 
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.Occurs
+
 
 object Anagrams {
 
@@ -94,25 +96,17 @@ object Anagrams {
    *  in the example above could have been displayed in some other order.
    */
   def combinations(occurrences: Occurrences): List[Occurrences] = occurrences match {
-    case Nil => Nil
-    case x :: xs =>{
-      occurrences.indices  map ( (a,b) =>
-        1 to b map (j => (a, j)
-        )
+    case Nil => List(Nil)
+    case x :: xs => {
+      def getPairs(pair: (Char, Int)): List[(Char, Int)] = ((1 to pair._2) map (i => (pair._1, i))).toList
+      //http://stackoverflow.com/questions/13122432/how-to-filter-a-list-of-tuples-in-scala/13122839
+      def noDuplicateKeys[A, B](xs: List[(A, B)]) ={
+        (xs groupBy (_._1)).values forall {_.size < 2}}
 
-      for {
-        occurrence <-
-      }
+      val combs = occurrences.foldLeft(List[(Char, Int)]())((b,a) =>  b ++ getPairs(a))
+      combs.toSet.subsets.map(_.toList).toList filter noDuplicateKeys
     }
-
-      // ('a', 2)
-      // occ => 1 to occ._2
-
-
-    //print(occurrences.toSet[(Char, Int)].subsets.map(_.toList).toList)
-    //occurrences.toSet[(Char, Int)].subsets.map(_.toList).toList
   }
-
 
   /** Subtracts occurrence list `y` from occurrence list `x`.
    *
@@ -124,8 +118,14 @@ object Anagrams {
    *  Note: the resulting value is an occurrence - meaning it is sorted
    *  and has no zero-entries.
    */
-  def subtract(x: Occurrences, y: Occurrences): Occurrences = ???
+  def subtract(x: Occurrences, y: Occurrences): Occurrences = {
 
+    //x.foldLeft(List[(Char, Int)]())((b, a) => b ++ y.contains(_._1 == a._1 && _._2 <= a._1))
+    //x.foldLeft(List[(Char, Int)]())((b, a) => b ++ )
+    x filterNot(p => y.exists(p2 => p._1 == p2._1 && p._2 <= p2._2))
+
+
+  }
   /** Returns a list of all anagram sentences of the given sentence.
    *
    *  An anagram of a sentence is formed by taking the occurrences of all the characters of
